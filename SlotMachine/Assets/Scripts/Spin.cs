@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public class Spin : MonoBehaviour
 {
     public Button GO;
+    public Button ButtonBet_5;
+    public Button ButtonBet_10;
+    public Button ButtonBet_20;
+    public Button ButtonBet_50;
 
     public Transform row_1;
     public Transform row_2;
@@ -23,63 +27,119 @@ public class Spin : MonoBehaviour
     [SerializeField] private Vector3 stopPos_2;
     [SerializeField] private Vector3 stopPos_3;
 
+    [SerializeField] float x;
+    [SerializeField] float y;
+    [SerializeField] float z;
+
+    [SerializeField] private bool workMainMethod;
+
+    public Text betValue;
+    public Text coinsText;
+    private int coinsInt;
+
+    public GameObject CreditPanel;
+
     // Игровой таймер + возможные комбинации //
     float timer;
     float[] posY = { -8.2f, -4f, 0.5f, 4.5f, 8.5f };
 
+    [SerializeField] private int bet;
 
     void Start()
     {
-        // Задаем случайную скорость для спинов //
-        speedSpin_1 = Random.Range(25f, 60f);
-        speedSpin_2 = Random.Range(25f, 60f);
-        speedSpin_3 = Random.Range(25f, 60f);
+        GO.interactable = false;
+        workMainMethod = false;
+        coinsInt = 50;              // Задаем стартовое кол-во очков...
+
 
         // Задаем стартовую позицию спинов //
         startPos_1 = new Vector3(-4.6f, -8.2f, 0);
         startPos_2 = new Vector3(0, -8.2f, 0);
         startPos_3 = new Vector3(4.6f, -8.2f, 0);
-
-        // Задаем случайное выпадение символа //
-        var rand_1 = Random.Range(0, posY.Length);
-        stopPos_1 = new Vector3(-4.6f, posY[rand_1], 0);
-
-        var rand_2 = Random.Range(0, posY.Length);
-        stopPos_2 = new Vector3(0, posY[rand_2], 0);
-
-        var rand_3 = Random.Range(0, posY.Length);
-        stopPos_3 = new Vector3(4.6f, posY[rand_3], 0);
-
     }
+
 
     void Update()
     {
+        coinsText.text = coinsInt.ToString();
+        betValue.text = bet.ToString();
         timer += Time.deltaTime; // Наш игровой таймер...
 
-        // Запуск всех барабанов в едином методе //
-        StartAllSpin();
+        StartAllSpin();   // Запуск всех барабанов в едином методе...
+        ACT();
     }
-    public void ResetTimer()
-    {
-        timer = 0;
 
+
+
+    public void ButtonGO()
+    {
+        // Каждый раз обновляем случайное выпадение символа по клику кнопки GO //
         var rand_1 = Random.Range(0, posY.Length);
         stopPos_1 = new Vector3(-4.6f, posY[rand_1], 0);
+        for(int i = 0; i <= rand_1; i++)
+        {
+            if(i == 0)
+            {
+                x = 1;
+            }
+            x = i + 1;
+        }
 
         var rand_2 = Random.Range(0, posY.Length);
         stopPos_2 = new Vector3(0, posY[rand_2], 0);
+        for (int i = 0; i <= rand_2; i++)
+        {
+            if (i == 0)
+            {
+                y = 1;
+            }
+            y = i + 1;
+        }
 
         var rand_3 = Random.Range(0, posY.Length);
         stopPos_3 = new Vector3(4.6f, posY[rand_3], 0);
+        for (int i = 0; i <= rand_3; i++)
+        {
+            if (i == 0)
+            {
+                z = 1;
+            }
+            z = i + 1;
+        }
 
+        // Обновляем случайную скорость по клику кнопки GO //
+        speedSpin_1 = Random.Range(25f, 50f);
+        speedSpin_2 = Random.Range(25f, 50f);
+        speedSpin_3 = Random.Range(25f, 50f);
+
+        timer = 0;
+        workMainMethod = true;
+        coinsInt -= bet;
+        Invoke("CheckCredit", 6);
+    }
+
+    void ACT()
+    {
+        if(workMainMethod == true)
+        {
+            DisableBetButton();
+            GO.interactable = false;
+        }
+        if(workMainMethod == false)
+        {
+            EnableBetButton();
+        }
     }
 
     #region // Запуск вращения всех барабанов //
     public void StartAllSpin()
     {
-        Start_1();
-        Invoke("Start_2", 0.4f);
-        Invoke("Start_3", 0.4f);
+        if (workMainMethod == true)
+        {
+            Start_1();
+            Start_2();
+            Start_3();
+        }
     }
     #endregion
 
@@ -139,6 +199,7 @@ public class Spin : MonoBehaviour
         if (timer >= 5)
         {
             row_3.transform.position = stopPos_3;
+            workMainMethod = false;
         }
     }
     public void StartSpin_3()
@@ -152,4 +213,50 @@ public class Spin : MonoBehaviour
     }
     #endregion
 
+    public void Bet_5()
+    {
+        bet = 5;
+        GO.interactable = true;
+    }
+
+    public void Bet_10()
+    {
+        bet = 10;
+        GO.interactable = true;
+    }
+
+    public void Bet_20()
+    {
+        bet = 20;
+        GO.interactable = true;
+    }
+
+    public void Bet_50()
+    {
+        bet = 50;
+        GO.interactable = true;
+    }
+
+    void DisableBetButton()
+    {
+        ButtonBet_5.interactable = false;
+        ButtonBet_10.interactable = false;
+        ButtonBet_20.interactable = false;
+        ButtonBet_50.interactable = false;
+    }
+    void EnableBetButton()
+    {
+        ButtonBet_5.interactable = true;
+        ButtonBet_10.interactable = true;
+        ButtonBet_20.interactable = true;
+        ButtonBet_50.interactable = true;
+    }
+    void CheckCredit()
+    {
+        if(coinsInt < 0)
+        {
+            CreditPanel.SetActive(true);
+            coinsText.color = Color.red;
+        }
+    }
 }
