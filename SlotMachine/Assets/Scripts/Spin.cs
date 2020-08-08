@@ -27,23 +27,29 @@ public class Spin : MonoBehaviour
     [SerializeField] private Vector3 stopPos_2;
     [SerializeField] private Vector3 stopPos_3;
 
-    [SerializeField] float x;
-    [SerializeField] float y;
-    [SerializeField] float z;
+    [SerializeField] int x;
+    [SerializeField] int y;
+    [SerializeField] int z;
 
+    
     [SerializeField] private bool workMainMethod;
 
     public Text betValue;
     public Text coinsText;
-    private int coinsInt;
+    public Text gain;
+
+    [SerializeField] private int coinsInt;
 
     public GameObject CreditPanel;
+    public GameObject winPanel;
 
     // Игровой таймер + возможные комбинации //
     float timer;
     float[] posY = { -8.2f, -4f, 0.5f, 4.5f, 8.5f };
 
     [SerializeField] private int bet;
+    [SerializeField] private int tmp;
+
 
     void Start()
     {
@@ -61,12 +67,16 @@ public class Spin : MonoBehaviour
 
     void Update()
     {
+        // Приведение типов //
+        gain.text = tmp.ToString();
         coinsText.text = coinsInt.ToString();
         betValue.text = bet.ToString();
+
         timer += Time.deltaTime; // Наш игровой таймер...
 
         StartAllSpin();   // Запуск всех барабанов в едином методе...
         ACT();
+        
     }
 
 
@@ -114,8 +124,13 @@ public class Spin : MonoBehaviour
 
         timer = 0;
         workMainMethod = true;
+
         coinsInt -= bet;
-        Invoke("CheckCredit", 6);
+        DeleteCredit();
+        Invoke("CheckCredit", 5.5f);
+
+
+        CheckWinning();
     }
 
     void ACT()
@@ -258,5 +273,42 @@ public class Spin : MonoBehaviour
             CreditPanel.SetActive(true);
             coinsText.color = Color.red;
         }
+    }
+    void DeleteCredit()
+    {
+        if (coinsInt > 0)
+        {
+            CreditPanel.SetActive(false);
+            coinsText.color = Color.yellow;
+        }
+    }
+    void CheckWinning()
+    {
+        if(x == y && x == z)
+        {
+            tmp = 5 * x * bet;
+            StartCoroutine("ShowWinPanel");
+        }
+        if(x == y && x != z || x == z && x != y)
+        {
+            tmp = 2 * x * bet;
+            StartCoroutine("ShowWinPanel");
+        }
+        if(y == z && y != x)
+        {
+            tmp = 2 * y * bet;
+            StartCoroutine("ShowWinPanel");
+        }
+    }
+
+    IEnumerator ShowWinPanel()
+    {
+        yield return new WaitForSeconds(5.5f);
+        winPanel.SetActive(true);
+    }
+
+    public void CloseWinPanel()
+    {
+        winPanel.SetActive(false);
     }
 }
