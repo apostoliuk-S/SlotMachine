@@ -31,7 +31,7 @@ public class Spin : MonoBehaviour
     [SerializeField] int y;
     [SerializeField] int z;
 
-    
+    public ParticleSystem ps;
     [SerializeField] private bool workMainMethod;
 
     public Text betValue;
@@ -55,9 +55,10 @@ public class Spin : MonoBehaviour
     {
         GO.interactable = false;
         workMainMethod = false;
+        ps.Stop();
         coinsInt = 50;              // Задаем стартовое кол-во очков...
 
-
+        
         // Задаем стартовую позицию спинов //
         startPos_1 = new Vector3(-4.6f, -8.2f, 0);
         startPos_2 = new Vector3(0, -8.2f, 0);
@@ -76,7 +77,9 @@ public class Spin : MonoBehaviour
 
         StartAllSpin();   // Запуск всех барабанов в едином методе...
         ACT();
-        
+
+        StartCoroutine(HHH(1, 10, 2));
+
     }
 
 
@@ -301,14 +304,34 @@ public class Spin : MonoBehaviour
         }
     }
 
+
     IEnumerator ShowWinPanel()
     {
         yield return new WaitForSeconds(5.5f);
         winPanel.SetActive(true);
     }
+    IEnumerator FlyCoins()
+    {
+        ps.Play();
+        yield return new WaitForSeconds(2.5f);
+        ps.Stop();
+        winPanel.SetActive(false);
+    }
+    IEnumerator HHH(float startVal, float endVal, float duration)
+    {
+        float elapsed = 0;
+        float nextVal;
+        while(elapsed < duration)
+        {
+            nextVal = Mathf.Lerp(startVal, endVal, elapsed / duration);
+            coinsInt += 1;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
 
     public void CloseWinPanel()
     {
-        winPanel.SetActive(false);
+        StartCoroutine("FlyCoins");
     }
 }
