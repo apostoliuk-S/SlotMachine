@@ -3,62 +3,69 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class Spin : MonoBehaviour
 {
-    public Button GO;
+    public Button GO; // Кнопка запуска механизма...
+
+    // Кнопки ставок //
     public Button ButtonBet_5;
     public Button ButtonBet_10;
     public Button ButtonBet_20;
     public Button ButtonBet_50;
 
-    public Transform row_1;
-    public Transform row_2;
-    public Transform row_3;
+    // Кнопка закрытия попапа с выиграшрм //
+    public Button OK;
 
-    [SerializeField] private float speedSpin_1;
-    [SerializeField] private float speedSpin_2;
-    [SerializeField] private float speedSpin_3;
+    public Transform row_1;   //
+    public Transform row_2;  // Лента символов в барабанах...
+    public Transform row_3; //
 
-    [SerializeField] private Vector3 startPos_1;
-    [SerializeField] private Vector3 startPos_2;
-    [SerializeField] private Vector3 startPos_3;
+    [SerializeField] private float speedSpin_1;   //
+    [SerializeField] private float speedSpin_2;  // Переменные для задания случайной скорости (от 25 до 50)...
+    [SerializeField] private float speedSpin_3; //
 
-    [SerializeField] private Vector3 stopPos_1;
-    [SerializeField] private Vector3 stopPos_2;
-    [SerializeField] private Vector3 stopPos_3;
+    [SerializeField] private Vector3 startPos_1;   //
+    [SerializeField] private Vector3 startPos_2;  // Стартовая позиция барабанов...
+    [SerializeField] private Vector3 startPos_3; //
 
-    [SerializeField] int x;
-    [SerializeField] int y;
-    [SerializeField] int z;
+    [SerializeField] private Vector3 stopPos_1;   //
+    [SerializeField] private Vector3 stopPos_2;  // Рандомная позиция остановки барабанов (получает случайное значение из мпссива)...
+    [SerializeField] private Vector3 stopPos_3; //
 
-    public ParticleSystem ps;
-    [SerializeField] private bool workMainMethod;
+    [SerializeField] int x;   //
+    [SerializeField] int y;  // Тут 3 переменных для перевода рандомных значений с 3-х барабанов в их ценность: "1, 2, 3, 4, 5"...
+    [SerializeField] int z; //
 
-    public Text betValue;
-    public Text coinsText;
-    public Text gain;
+    public ParticleSystem ps; // Партикл полета поинтов...
+    [SerializeField] private bool workMainMethod; // Активация барабанов булевым значением...
+
+    public Text betValue;   // Отображение ставки в панели с выбором ставки...
+    public Text coinsText; //  Текстовое поле в правом углу (общий баланс)...
+    public Text gain;     //   Отображение нашего выиграша в попапе выиграша...
 
     [SerializeField] private int coinsInt;
 
-    public GameObject CreditPanel;
-    public GameObject winPanel;
+    public GameObject CreditPanel; // Панель кредита...
+    public GameObject winPanel;   //  Панель выиграша...
 
     // Игровой таймер + возможные комбинации //
     float timer;
     float[] posY = { -8.2f, -4f, 0.5f, 4.5f, 8.5f };
 
-    [SerializeField] private int bet;
-    [SerializeField] private int tmp;
+
+    [SerializeField] private int bet;  // Значение нашей ставки...
+    [SerializeField] private int tmp; //  Временная переменная для хранения выиграша...
 
 
     void Start()
     {
-        GO.interactable = false;
-        workMainMethod = false;
-        ps.Stop();
-        coinsInt = 50;              // Задаем стартовое кол-во очков...
+        GO.interactable = false; // Блокируем кнопку запуска на старте игры
+        workMainMethod = false; //  Выключаем метод запуска механизма вращения
+        ps.Stop();             //   Партикл систем стоп
+        coinsInt = 50;        // Задаем стартовое кол-во очков...
 
-        
+
         // Задаем стартовую позицию спинов //
         startPos_1 = new Vector3(-4.6f, -8.2f, 0);
         startPos_2 = new Vector3(0, -8.2f, 0);
@@ -76,10 +83,8 @@ public class Spin : MonoBehaviour
         timer += Time.deltaTime; // Наш игровой таймер...
 
         StartAllSpin();   // Запуск всех барабанов в едином методе...
-        ACT();
-
-        StartCoroutine(HHH(1, 10, 2));
-
+        ACT();           //  Вызов метода зависимомтей кнопок...
+        CheckCredit();  //   Метод проверки кредита...
     }
 
 
@@ -96,18 +101,18 @@ public class Spin : MonoBehaviour
                 x = 1;
             }
             x = i + 1;
-        }
+        } // Присвоение ценности для: X
 
         var rand_2 = Random.Range(0, posY.Length);
         stopPos_2 = new Vector3(0, posY[rand_2], 0);
-        for (int i = 0; i <= rand_2; i++)
+        for (int i = 0; i <= rand_2; i++) // Присвоение ценности для: Y
         {
             if (i == 0)
             {
                 y = 1;
             }
             y = i + 1;
-        }
+        } // Присвоение ценности для: Y
 
         var rand_3 = Random.Range(0, posY.Length);
         stopPos_3 = new Vector3(4.6f, posY[rand_3], 0);
@@ -118,25 +123,27 @@ public class Spin : MonoBehaviour
                 z = 1;
             }
             z = i + 1;
-        }
+        } // Присвоение ценности для: Z
 
         // Обновляем случайную скорость по клику кнопки GO //
         speedSpin_1 = Random.Range(25f, 50f);
         speedSpin_2 = Random.Range(25f, 50f);
         speedSpin_3 = Random.Range(25f, 50f);
 
-        timer = 0;
+        timer = 0; // Обнуляем игровой таймер
         workMainMethod = true;
+        OK.interactable = true;
 
-        coinsInt -= bet;
-        DeleteCredit();
-        Invoke("CheckCredit", 5.5f);
+        coinsInt -= bet; // Отнимаем стаку из общего счета
+        //DeleteCredit(); // Удаление кредита
+        //Invoke("CheckCredit", 5.5f); // Проверка кредита с задержкой
 
 
-        CheckWinning();
+        CheckWinning(); // Проверка выиграша
+        
     }
 
-    void ACT()
+    void ACT() // Метод зависимостей кнопок
     {
         if(workMainMethod == true)
         {
@@ -255,37 +262,34 @@ public class Spin : MonoBehaviour
         GO.interactable = true;
     }
 
-    void DisableBetButton()
+    void DisableBetButton()    // Деактивация всех кнопок со ставками
     {
         ButtonBet_5.interactable = false;
         ButtonBet_10.interactable = false;
         ButtonBet_20.interactable = false;
         ButtonBet_50.interactable = false;
     }
-    void EnableBetButton()
+    void EnableBetButton()   // Активация всех кнопок со ставками
     {
         ButtonBet_5.interactable = true;
         ButtonBet_10.interactable = true;
         ButtonBet_20.interactable = true;
         ButtonBet_50.interactable = true;
     }
-    void CheckCredit()
+    void CheckCredit()     // Проверка на кредит
     {
         if(coinsInt < 0)
         {
             CreditPanel.SetActive(true);
             coinsText.color = Color.red;
         }
-    }
-    void DeleteCredit()
-    {
         if (coinsInt > 0)
         {
             CreditPanel.SetActive(false);
             coinsText.color = Color.yellow;
         }
     }
-    void CheckWinning()
+    void CheckWinning()  // Метод проверки выиграша
     {
         if(x == y && x == z)
         {
@@ -305,33 +309,42 @@ public class Spin : MonoBehaviour
     }
 
 
-    IEnumerator ShowWinPanel()
+    IEnumerator ShowWinPanel() // Корутина для вывода панели выиграша
     {
-        yield return new WaitForSeconds(5.5f);
+        yield return new WaitForSeconds(5f);
         winPanel.SetActive(true);
     }
-    IEnumerator FlyCoins()
+    IEnumerator FlyCoins()   // Корутина полета поинтов и закрытия окна выиграша
     {
         ps.Play();
         yield return new WaitForSeconds(2.5f);
         ps.Stop();
         winPanel.SetActive(false);
     }
-    IEnumerator HHH(float startVal, float endVal, float duration)
-    {
-        float elapsed = 0;
-        float nextVal;
-        while(elapsed < duration)
-        {
-            nextVal = Mathf.Lerp(startVal, endVal, elapsed / duration);
-            coinsInt += 1;
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-    }
+    
 
-    public void CloseWinPanel()
+    public void CloseWinPanel() // Кнопка активации полета поинтов и закрытия окна
     {
         StartCoroutine("FlyCoins");
+        StartCoroutine(LerpValue(coinsInt, coinsInt + tmp, 3));
+        OK.interactable = false;
+    }
+
+    IEnumerator LerpValue(float startValue, float endValue, float duration) // Сопрограмма для красивого зачисления поинтов
+    {
+        float elapsed = 0;
+        float nextValue;
+
+        while(elapsed < duration)
+        {
+            nextValue = Mathf.Lerp(startValue, endValue, elapsed / duration);
+
+            coinsInt = (int)nextValue;
+            coinsText.text = coinsInt.ToString();
+
+            elapsed += Time.deltaTime;
+            yield return null;
+            coinsInt = (int)endValue;
+        }
     }
 }
