@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Spin : MonoBehaviour
 {
+
     public Button GO; // Кнопка запуска механизма...
 
     // Кнопки ставок //
@@ -43,6 +44,7 @@ public class Spin : MonoBehaviour
     public Text betValue;   // Отображение ставки в панели с выбором ставки...
     public Text coinsText; //  Текстовое поле в правом углу (общий баланс)...
     public Text gain;     //   Отображение нашего выиграша в попапе выиграша...
+    public Text Nickname;
 
     [SerializeField] private int coinsInt;
 
@@ -63,9 +65,10 @@ public class Spin : MonoBehaviour
         GO.interactable = false; // Блокируем кнопку запуска на старте игры
         workMainMethod = false; //  Выключаем метод запуска механизма вращения
         ps.Stop();             //   Партикл систем стоп
-        coinsInt = 50;        // Задаем стартовое кол-во очков...
+        coinsInt = PlayerPrefs.GetInt("Points");        // Задаем стартовое кол-во очков...
 
-
+        Nickname.text = PlayerPrefs.GetString("Name");
+        
         // Задаем стартовую позицию спинов //
         startPos_1 = new Vector3(-4.6f, -8.2f, 0);
         startPos_2 = new Vector3(0, -8.2f, 0);
