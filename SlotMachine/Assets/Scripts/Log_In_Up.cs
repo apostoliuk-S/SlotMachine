@@ -7,21 +7,22 @@ using UnityEngine.SceneManagement;
 
 public class Log_In_Up : MonoBehaviour
 {
+    Spin spin;
+
     public InputField nickText;
 
 
-    string playerName;
+    string playerName_1;
+    string playerName_2;
+    string playerName_3;
+    string playerName_4;
+    string playerName_5;
     int coins;
 
-    
+    string tmp;
 
     public void NewPlayer()
     {
-        playerName = nickText.text;
-        coins = 50;
-
-        PlayerPrefs.SetString("Name", playerName);
-        PlayerPrefs.SetInt("Points", coins);
-        SceneManager.LoadScene(1);
+        
     }
 }

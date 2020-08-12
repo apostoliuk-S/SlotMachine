@@ -15,6 +15,9 @@ public class Spin : MonoBehaviour
     public Button ButtonBet_20;
     public Button ButtonBet_50;
 
+    public Button Button_On_Off;
+    public Sprite[] Switch_On_Off;
+
     // Кнопка закрытия попапа с выиграшрм //
     public Button OK;
 
@@ -40,13 +43,15 @@ public class Spin : MonoBehaviour
 
     public ParticleSystem ps; // Партикл полета поинтов...
     [SerializeField] private bool workMainMethod; // Активация барабанов булевым значением...
+    [SerializeField] private bool activationProgResult;
 
     public Text betValue;   // Отображение ставки в панели с выбором ставки...
     public Text coinsText; //  Текстовое поле в правом углу (общий баланс)...
     public Text gain;     //   Отображение нашего выиграша в попапе выиграша...
     public Text Nickname;
 
-    [SerializeField] private int coinsInt;
+    public int coinsInt;
+    public string player;
 
     public GameObject CreditPanel; // Панель кредита...
     public GameObject winPanel;   //  Панель выиграша...
@@ -54,6 +59,8 @@ public class Spin : MonoBehaviour
     // Игровой таймер + возможные комбинации //
     float timer;
     float[] posY = { -8.2f, -4f, 0.5f, 4.5f, 8.5f };
+    int counter;
+
 
 
     [SerializeField] private int bet;  // Значение нашей ставки...
@@ -62,12 +69,14 @@ public class Spin : MonoBehaviour
 
     void Start()
     {
+        activationProgResult = false;
         GO.interactable = false; // Блокируем кнопку запуска на старте игры
         workMainMethod = false; //  Выключаем метод запуска механизма вращения
         ps.Stop();             //   Партикл систем стоп
-        coinsInt = PlayerPrefs.GetInt("Points");        // Задаем стартовое кол-во очков...
 
-        Nickname.text = PlayerPrefs.GetString("Name");
+        //coinsInt = PlayerPrefs.GetInt("Points");        // Задаем стартовое кол-во очков...
+
+        //Nickname.text = player;
         
         // Задаем стартовую позицию спинов //
         startPos_1 = new Vector3(-4.6f, -8.2f, 0);
@@ -88,45 +97,157 @@ public class Spin : MonoBehaviour
         StartAllSpin();   // Запуск всех барабанов в едином методе...
         ACT();           //  Вызов метода зависимомтей кнопок...
         CheckCredit();  //   Метод проверки кредита...
+
     }
 
 
 
     public void ButtonGO()
     {
-        // Каждый раз обновляем случайное выпадение символа по клику кнопки GO //
-        var rand_1 = Random.Range(0, posY.Length);
-        stopPos_1 = new Vector3(-4.6f, posY[rand_1], 0);
-        for(int i = 0; i <= rand_1; i++)
+        if (activationProgResult == false)
         {
-            if(i == 0)
+            // Каждый раз обновляем случайное выпадение символа по клику кнопки GO //
+            var rand_1 = Random.Range(0, posY.Length);
+            stopPos_1 = new Vector3(-4.6f, posY[rand_1], 0);
+            for (int i = 0; i <= rand_1; i++)
             {
-                x = 1;
-            }
-            x = i + 1;
-        } // Присвоение ценности для: X
+                if (i == 0)
+                {
+                    x = 1;
+                }
+                x = i + 1;
+            } // Присвоение ценности для: X
 
-        var rand_2 = Random.Range(0, posY.Length);
-        stopPos_2 = new Vector3(0, posY[rand_2], 0);
-        for (int i = 0; i <= rand_2; i++) // Присвоение ценности для: Y
-        {
-            if (i == 0)
+            var rand_2 = Random.Range(0, posY.Length);
+            stopPos_2 = new Vector3(0, posY[rand_2], 0);
+            for (int i = 0; i <= rand_2; i++) // Присвоение ценности для: Y
             {
-                y = 1;
-            }
-            y = i + 1;
-        } // Присвоение ценности для: Y
+                if (i == 0)
+                {
+                    y = 1;
+                }
+                y = i + 1;
+            } // Присвоение ценности для: Y
 
-        var rand_3 = Random.Range(0, posY.Length);
-        stopPos_3 = new Vector3(4.6f, posY[rand_3], 0);
-        for (int i = 0; i <= rand_3; i++)
-        {
-            if (i == 0)
+            var rand_3 = Random.Range(0, posY.Length);
+            stopPos_3 = new Vector3(4.6f, posY[rand_3], 0);
+            for (int i = 0; i <= rand_3; i++)
             {
-                z = 1;
-            }
-            z = i + 1;
-        } // Присвоение ценности для: Z
+                if (i == 0)
+                {
+                    z = 1;
+                }
+                z = i + 1;
+            } // Присвоение ценности для: Z
+        } // Когда программируемая кнопка выключена (все спины в режиме рандома)
+        if (activationProgResult == true)
+        {
+            if (counter == 7)
+            {
+                var rand_1 = Random.Range(0, posY.Length);
+                stopPos_1 = new Vector3(-4.6f, posY[rand_1], 0);
+                for (int i = 0; i <= rand_1; i++)
+                {
+                    if (i == 0)
+                    {
+                        x = 1;
+                    }
+                    x = i + 1;
+                } // Присвоение ценности для: X
+
+                stopPos_2 = new Vector3(0, posY[rand_1], 0);
+                for (int i = 0; i <= rand_1; i++) // Присвоение ценности для: Y
+                {
+                    if (i == 0)
+                    {
+                        y = 1;
+                    }
+                    y = i + 1;
+                } // Присвоение ценности для: Y
+
+                stopPos_3 = new Vector3(4.6f, posY[rand_1], 0);
+                for (int i = 0; i <= rand_1; i++)
+                {
+                    if (i == 0)
+                    {
+                        z = 1;
+                    }
+                    z = i + 1;
+                } // Присвоение ценности для: Z
+                counter = 0;
+            }       // Каждый 8-й спин: Выпадает линия из 3-х одинаковых символов
+            else if (counter == 3)
+            {
+                var rand_1 = Random.Range(0, posY.Length);
+                stopPos_1 = new Vector3(-4.6f, posY[rand_1], 0);
+                for (int i = 0; i <= rand_1; i++)
+                {
+                    if (i == 0)
+                    {
+                        x = 1;
+                    }
+                    x = i + 1;
+                } // Присвоение ценности для: X
+
+                var rand_2 = Random.Range(0, posY.Length);
+                stopPos_2 = new Vector3(0, posY[rand_2], 0);
+                for (int i = 0; i <= rand_2; i++) // Присвоение ценности для: Y
+                {
+                    if (i == 0)
+                    {
+                        y = 1;
+                    }
+                    y = i + 1;
+                } // Присвоение ценности для: Y
+
+                stopPos_3 = new Vector3(4.6f, posY[rand_1], 0);
+                for (int i = 0; i <= rand_1; i++)
+                {
+                    if (i == 0)
+                    {
+                        z = 1;
+                    }
+                    z = i + 1;
+                } // Присвоение ценности для: Z
+                counter++;
+            } //  Каждый 4-й спин: Первый и второй барабан получают одинаковые значения
+            else
+            {
+                var rand_1 = Random.Range(0, posY.Length);
+                stopPos_1 = new Vector3(-4.6f, posY[rand_1], 0);
+                for (int i = 0; i <= rand_1; i++)
+                {
+                    if (i == 0)
+                    {
+                        x = 1;
+                    }
+                    x = i + 1;
+                } // Присвоение ценности для: X
+
+                var rand_2 = Random.Range(0, posY.Length);
+                stopPos_2 = new Vector3(0, posY[rand_2], 0);
+                for (int i = 0; i <= rand_2; i++) // Присвоение ценности для: Y
+                {
+                    if (i == 0)
+                    {
+                        y = 1;
+                    }
+                    y = i + 1;
+                } // Присвоение ценности для: Y
+
+                var rand_3 = Random.Range(0, posY.Length);
+                stopPos_3 = new Vector3(4.6f, posY[rand_3], 0);
+                for (int i = 0; i <= rand_3; i++)
+                {
+                    if (i == 0)
+                    {
+                        z = 1;
+                    }
+                    z = i + 1;
+                } // Присвоение ценности для: Z
+                counter++;
+            }                  //   Все остальные спины будут случайными
+        }
 
         // Обновляем случайную скорость по клику кнопки GO //
         speedSpin_1 = Random.Range(25f, 50f);
@@ -138,10 +259,6 @@ public class Spin : MonoBehaviour
         OK.interactable = true;
 
         coinsInt -= bet; // Отнимаем стаку из общего счета
-        //DeleteCredit(); // Удаление кредита
-        //Invoke("CheckCredit", 5.5f); // Проверка кредита с задержкой
-
-
         CheckWinning(); // Проверка выиграша
         
     }
@@ -349,5 +466,28 @@ public class Spin : MonoBehaviour
             yield return null;
             coinsInt = (int)endValue;
         }
+    }
+
+    public void Switch_In_Programing_mod()
+    {
+        if(activationProgResult == false)
+        {
+            ActivationProg();
+        }
+
+        else if(activationProgResult == true)
+        {
+            DeactivationProg();
+        }
+    }
+    void ActivationProg()
+    {
+        activationProgResult = true;
+        Button_On_Off.GetComponent<Image>().sprite = Switch_On_Off[1];
+    }
+    void DeactivationProg()
+    {
+        activationProgResult = false;
+        Button_On_Off.GetComponent<Image>().sprite = Switch_On_Off[0];
     }
 }
