@@ -44,6 +44,14 @@ public class Spin : MonoBehaviour
     public ParticleSystem ps; // Партикл полета поинтов...
     [SerializeField] private bool workMainMethod; // Активация барабанов булевым значением...
     [SerializeField] private bool activationProgResult;
+    [SerializeField] private bool P1;
+    [SerializeField] private bool P2;
+    [SerializeField] private bool P3;
+    [SerializeField] private bool P4;
+    [SerializeField] private bool P5;
+
+    [SerializeField] private bool activationNEW_1;
+
 
     public Text betValue;   // Отображение ставки в панели с выбором ставки...
     public Text coinsText; //  Текстовое поле в правом углу (общий баланс)...
@@ -61,10 +69,32 @@ public class Spin : MonoBehaviour
     float[] posY = { -8.2f, -4f, 0.5f, 4.5f, 8.5f };
     int counter;
 
-
-
     [SerializeField] private int bet;  // Значение нашей ставки...
     [SerializeField] private int tmp; //  Временная переменная для хранения выиграша...
+
+     // Поля для таблицы лидерборда //
+    /////////////////////////////////
+    public Transform PlayerField_1;
+    public Transform PlayerField_2;
+    public Transform PlayerField_3;
+    public Transform PlayerField_4;
+    public Transform PlayerField_5;
+
+    public Text NamePlayer_1;
+    public Text ScorePlayer_1;
+
+    public Text NamePlayer_2;
+    public Text ScorePlayer_2;
+
+    public Text NamePlayer_3;
+    public Text ScorePlayer_3;
+
+    public Text NamePlayer_4;
+    public Text ScorePlayer_4;
+
+    public Text NamePlayer_5;
+    public Text ScorePlayer_5;
+    /////////////////////////////////
 
 
     void Start()
@@ -74,14 +104,14 @@ public class Spin : MonoBehaviour
         workMainMethod = false; //  Выключаем метод запуска механизма вращения
         ps.Stop();             //   Партикл систем стоп
 
-        //coinsInt = PlayerPrefs.GetInt("Points");        // Задаем стартовое кол-во очков...
+        coinsInt = 50;
 
-        //Nickname.text = player;
-        
         // Задаем стартовую позицию спинов //
         startPos_1 = new Vector3(-4.6f, -8.2f, 0);
         startPos_2 = new Vector3(0, -8.2f, 0);
         startPos_3 = new Vector3(4.6f, -8.2f, 0);
+
+        Check_Players(); // Вызов метода проверки аккаунтов
     }
 
 
@@ -98,6 +128,8 @@ public class Spin : MonoBehaviour
         ACT();           //  Вызов метода зависимомтей кнопок...
         CheckCredit();  //   Метод проверки кредита...
 
+
+        Update_All_Data(); // Обновление всех данных по игрокам
     }
 
 
@@ -247,7 +279,7 @@ public class Spin : MonoBehaviour
                 } // Присвоение ценности для: Z
                 counter++;
             }                  //   Все остальные спины будут случайными
-        }
+        } //  Когда кнопка в режиме: On, то активируется программируемый мод
 
         // Обновляем случайную скорость по клику кнопки GO //
         speedSpin_1 = Random.Range(25f, 50f);
@@ -490,4 +522,285 @@ public class Spin : MonoBehaviour
         activationProgResult = false;
         Button_On_Off.GetComponent<Image>().sprite = Switch_On_Off[0];
     }
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                  // Save new player //
+
+
+    // Условия создания профилей плееров и их авторизации
+    void Check_Players()
+    {
+        if (PlayerPrefs.GetString("NewPlayer") == PlayerPrefs.GetString("NamePlayer_1"))
+        {
+            Save_Data();
+
+            Nickname.text = PlayerPrefs.GetString("NamePlayer_1");
+            NamePlayer_1.text = PlayerPrefs.GetString("NamePlayer_1");
+            ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+            coinsInt = PlayerPrefs.GetInt("ScorePlayer_1");
+            P1 = true;
+        }
+        if (PlayerPrefs.GetString("NewPlayer") == PlayerPrefs.GetString("NamePlayer_2"))
+        {
+            Save_Data();
+
+            Nickname.text = PlayerPrefs.GetString("NamePlayer_2");
+            NamePlayer_2.text = PlayerPrefs.GetString("NamePlayer_2");
+            ScorePlayer_2.text = PlayerPrefs.GetInt("ScorePlayer_2").ToString();
+            coinsInt = PlayerPrefs.GetInt("ScorePlayer_2");
+            P2 = true;
+        }
+        if (PlayerPrefs.GetString("NewPlayer") == PlayerPrefs.GetString("NamePlayer_3"))
+        {
+            Save_Data();
+
+            Nickname.text = PlayerPrefs.GetString("NamePlayer_3");
+            NamePlayer_3.text = PlayerPrefs.GetString("NamePlayer_3");
+            ScorePlayer_3.text = PlayerPrefs.GetInt("ScorePlayer_3").ToString();
+            coinsInt = PlayerPrefs.GetInt("ScorePlayer_3");
+            P3 = true;
+        }
+        if (PlayerPrefs.GetString("NewPlayer") == PlayerPrefs.GetString("NamePlayer_4"))
+        {
+            Save_Data();
+
+            Nickname.text = PlayerPrefs.GetString("NamePlayer_4");
+            NamePlayer_4.text = PlayerPrefs.GetString("NamePlayer_4");
+            ScorePlayer_4.text = PlayerPrefs.GetInt("ScorePlayer_4").ToString();
+            coinsInt = PlayerPrefs.GetInt("ScorePlayer_4");
+            P4 = true;
+        }
+        if (PlayerPrefs.GetString("NewPlayer") == PlayerPrefs.GetString("NamePlayer_5"))
+        {
+            Save_Data();
+
+            Nickname.text = PlayerPrefs.GetString("NamePlayer_5");
+            NamePlayer_5.text = PlayerPrefs.GetString("NamePlayer_5");
+            ScorePlayer_5.text = PlayerPrefs.GetInt("ScorePlayer_5").ToString();
+            coinsInt = PlayerPrefs.GetInt("ScorePlayer_5");
+            P5 = true;
+        }
+        if (PlayerPrefs.GetString("NewPlayer") != PlayerPrefs.GetString("NamePlayer_1"))
+        {
+            if (PlayerPrefs.GetString("Slot_1") != "Z")
+            {
+                NEW_PLAYER_1();
+            }
+            else if (PlayerPrefs.GetString("Slot_1") == "Z" && PlayerPrefs.GetString("Slot_2") != "Z")
+            {
+                NEW_PLAYER_2();
+            }
+            else if (PlayerPrefs.GetString("Slot_1") == "Z" && PlayerPrefs.GetString("Slot_2") == "Z" && PlayerPrefs.GetString("Slot_3") != "Z")
+            {
+                NEW_PLAYER_3();
+            }
+            else if (PlayerPrefs.GetString("Slot_1") == "Z" && PlayerPrefs.GetString("Slot_2") == "Z" && PlayerPrefs.GetString("Slot_3") == "Z" && PlayerPrefs.GetString("Slot_4") != "Z")
+            {
+                NEW_PLAYER_4();
+            }
+            else if (PlayerPrefs.GetString("Slot_1") == "Z" && PlayerPrefs.GetString("Slot_2") == "Z" && PlayerPrefs.GetString("Slot_3") == "Z" && PlayerPrefs.GetString("Slot_4") == "Z" && PlayerPrefs.GetString("Slot_5") != "Z")
+            {
+                NEW_PLAYER_5();
+            }
+        }
+    }
+
+    // Методы создания новых плееров //
+    void NEW_PLAYER_1()
+    {
+        PlayerPrefs.SetString("NamePlayer_1", PlayerPrefs.GetString("NewPlayer"));
+        PlayerPrefs.SetInt("ScorePlayer_1", coinsInt);
+
+        Nickname.text = PlayerPrefs.GetString("NamePlayer_1");
+        
+        NamePlayer_1.text = PlayerPrefs.GetString("NamePlayer_1");
+        ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+        P1 = true;
+        PlayerPrefs.SetString("Slot_1", "Z");
+    }
+    void NEW_PLAYER_2()
+    {
+        PlayerPrefs.SetString("NamePlayer_1", PlayerPrefs.GetString("NamePlayer_1"));
+        NamePlayer_1.text = PlayerPrefs.GetString("NamePlayer_1");
+        PlayerPrefs.SetInt("ScorePlayer_1", PlayerPrefs.GetInt("ScorePlayer_1"));
+        ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+
+
+        PlayerPrefs.SetString("NamePlayer_2", PlayerPrefs.GetString("NewPlayer"));
+        PlayerPrefs.SetInt("ScorePlayer_2", coinsInt);
+
+        Nickname.text = PlayerPrefs.GetString("NamePlayer_2");
+
+        NamePlayer_2.text = PlayerPrefs.GetString("NamePlayer_2");
+        ScorePlayer_2.text = PlayerPrefs.GetInt("ScorePlayer_2").ToString();
+        P2 = true;
+        PlayerPrefs.SetString("Slot_2", "Z");
+    }
+    void NEW_PLAYER_3()
+    {
+        PlayerPrefs.SetString("NamePlayer_1", PlayerPrefs.GetString("NamePlayer_1"));
+        NamePlayer_1.text = PlayerPrefs.GetString("NamePlayer_1");
+        PlayerPrefs.SetInt("ScorePlayer_1", PlayerPrefs.GetInt("ScorePlayer_1"));
+        ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_2", PlayerPrefs.GetString("NamePlayer_2"));
+        NamePlayer_2.text = PlayerPrefs.GetString("NamePlayer_2");
+        PlayerPrefs.SetInt("ScorePlayer_2", PlayerPrefs.GetInt("ScorePlayer_2"));
+        ScorePlayer_2.text = PlayerPrefs.GetInt("ScorePlayer_2").ToString();
+
+
+        PlayerPrefs.SetString("NamePlayer_3", PlayerPrefs.GetString("NewPlayer"));
+        PlayerPrefs.SetInt("ScorePlayer_3", coinsInt);
+
+        Nickname.text = PlayerPrefs.GetString("NamePlayer_3");
+
+        NamePlayer_3.text = PlayerPrefs.GetString("NamePlayer_3");
+        ScorePlayer_3.text = PlayerPrefs.GetInt("ScorePlayer_3").ToString();
+        P3 = true;
+        PlayerPrefs.SetString("Slot_3", "Z");
+    }
+    void NEW_PLAYER_4()
+    {
+        PlayerPrefs.SetString("NamePlayer_1", PlayerPrefs.GetString("NamePlayer_1"));
+        NamePlayer_1.text = PlayerPrefs.GetString("NamePlayer_1");
+        PlayerPrefs.SetInt("ScorePlayer_1", PlayerPrefs.GetInt("ScorePlayer_1"));
+        ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_2", PlayerPrefs.GetString("NamePlayer_2"));
+        NamePlayer_2.text = PlayerPrefs.GetString("NamePlayer_2");
+        PlayerPrefs.SetInt("ScorePlayer_2", PlayerPrefs.GetInt("ScorePlayer_2"));
+        ScorePlayer_2.text = PlayerPrefs.GetInt("ScorePlayer_2").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_3", PlayerPrefs.GetString("NamePlayer_3"));
+        NamePlayer_3.text = PlayerPrefs.GetString("NamePlayer_3");
+        PlayerPrefs.SetInt("ScorePlayer_3", PlayerPrefs.GetInt("ScorePlayer_3"));
+        ScorePlayer_3.text = PlayerPrefs.GetInt("ScorePlayer_3").ToString();
+
+
+        PlayerPrefs.SetString("NamePlayer_4", PlayerPrefs.GetString("NewPlayer"));
+        PlayerPrefs.SetInt("ScorePlayer_4", coinsInt);
+
+        Nickname.text = PlayerPrefs.GetString("NamePlayer_4");
+
+        NamePlayer_4.text = PlayerPrefs.GetString("NamePlayer_4");
+        ScorePlayer_4.text = PlayerPrefs.GetInt("ScorePlayer_4").ToString();
+        P4 = true;
+        PlayerPrefs.SetString("Slot_4", "Z");
+    }
+    void NEW_PLAYER_5()
+    {
+        PlayerPrefs.SetString("NamePlayer_1", PlayerPrefs.GetString("NamePlayer_1"));
+        NamePlayer_1.text = PlayerPrefs.GetString("NamePlayer_1");
+        PlayerPrefs.SetInt("ScorePlayer_1", PlayerPrefs.GetInt("ScorePlayer_1"));
+        ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_2", PlayerPrefs.GetString("NamePlayer_2"));
+        NamePlayer_2.text = PlayerPrefs.GetString("NamePlayer_2");
+        PlayerPrefs.SetInt("ScorePlayer_2", PlayerPrefs.GetInt("ScorePlayer_2"));
+        ScorePlayer_2.text = PlayerPrefs.GetInt("ScorePlayer_2").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_3", PlayerPrefs.GetString("NamePlayer_3"));
+        NamePlayer_3.text = PlayerPrefs.GetString("NamePlayer_3");
+        PlayerPrefs.SetInt("ScorePlayer_3", PlayerPrefs.GetInt("ScorePlayer_3"));
+        ScorePlayer_3.text = PlayerPrefs.GetInt("ScorePlayer_3").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_4", PlayerPrefs.GetString("NamePlayer_4"));
+        NamePlayer_4.text = PlayerPrefs.GetString("NamePlayer_4");
+        PlayerPrefs.SetInt("ScorePlayer_4", PlayerPrefs.GetInt("ScorePlayer_4"));
+        ScorePlayer_4.text = PlayerPrefs.GetInt("ScorePlayer_4").ToString();
+
+
+        PlayerPrefs.SetString("NamePlayer_5", PlayerPrefs.GetString("NewPlayer"));
+        PlayerPrefs.SetInt("ScorePlayer_5", coinsInt);
+
+        Nickname.text = PlayerPrefs.GetString("NamePlayer_5");
+
+        NamePlayer_5.text = PlayerPrefs.GetString("NamePlayer_5");
+        ScorePlayer_5.text = PlayerPrefs.GetInt("ScorePlayer_5").ToString();
+        P5 = true;
+        PlayerPrefs.SetString("Slot_5", "Z");
+    }
+
+
+    void Save_Data()
+    {
+        PlayerPrefs.SetString("NamePlayer_1", PlayerPrefs.GetString("NamePlayer_1"));
+        NamePlayer_1.text = PlayerPrefs.GetString("NamePlayer_1");
+        PlayerPrefs.SetInt("ScorePlayer_1", PlayerPrefs.GetInt("ScorePlayer_1"));
+        ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_2", PlayerPrefs.GetString("NamePlayer_2"));
+        NamePlayer_2.text = PlayerPrefs.GetString("NamePlayer_2");
+        PlayerPrefs.SetInt("ScorePlayer_2", PlayerPrefs.GetInt("ScorePlayer_2"));
+        ScorePlayer_2.text = PlayerPrefs.GetInt("ScorePlayer_2").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_3", PlayerPrefs.GetString("NamePlayer_3"));
+        NamePlayer_3.text = PlayerPrefs.GetString("NamePlayer_3");
+        PlayerPrefs.SetInt("ScorePlayer_3", PlayerPrefs.GetInt("ScorePlayer_3"));
+        ScorePlayer_3.text = PlayerPrefs.GetInt("ScorePlayer_3").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_4", PlayerPrefs.GetString("NamePlayer_4"));
+        NamePlayer_4.text = PlayerPrefs.GetString("NamePlayer_4");
+        PlayerPrefs.SetInt("ScorePlayer_4", PlayerPrefs.GetInt("ScorePlayer_4"));
+        ScorePlayer_4.text = PlayerPrefs.GetInt("ScorePlayer_4").ToString();
+
+        PlayerPrefs.SetString("NamePlayer_5", PlayerPrefs.GetString("NamePlayer_5"));
+        NamePlayer_5.text = PlayerPrefs.GetString("NamePlayer_5");
+        PlayerPrefs.SetInt("ScorePlayer_5", PlayerPrefs.GetInt("ScorePlayer_5"));
+        ScorePlayer_5.text = PlayerPrefs.GetInt("ScorePlayer_5").ToString();
+    } // Метод для сохранения данных всех игроков перед входом существующего игрока
+
+    void Update_All_Data()
+    {
+        updateNew_1();
+        updateNew_2();
+        updateNew_3();
+        updateNew_4();
+        updateNew_5();
+    } // Метод в котором присваиваем полям данные активного на данный момент плеера (* не в лидерборде, а игровом моде *)
+
+    void updateNew_1()
+    {
+        if(P1 == true)
+        {
+            PlayerPrefs.SetInt("ScorePlayer_1", coinsInt);
+            ScorePlayer_1.text = PlayerPrefs.GetInt("ScorePlayer_1").ToString();
+        }
+    }
+    void updateNew_2()
+    {
+        if (P2 == true)
+        {
+            PlayerPrefs.SetInt("ScorePlayer_2", coinsInt);
+            ScorePlayer_2.text = PlayerPrefs.GetInt("ScorePlayer_2").ToString();
+        }
+    }
+    void updateNew_3()
+    {
+        if (P3 == true)
+        {
+            PlayerPrefs.SetInt("ScorePlayer_3", coinsInt);
+            ScorePlayer_3.text = PlayerPrefs.GetInt("ScorePlayer_3").ToString();
+        }
+    }
+    void updateNew_4()
+    {
+        if (P4 == true)
+        {
+            PlayerPrefs.SetInt("ScorePlayer_4", coinsInt);
+            ScorePlayer_4.text = PlayerPrefs.GetInt("ScorePlayer_4").ToString();
+        }
+    }
+    void updateNew_5()
+    {
+        if (P5 == true)
+        {
+            PlayerPrefs.SetInt("ScorePlayer_5", coinsInt);
+            ScorePlayer_5.text = PlayerPrefs.GetInt("ScorePlayer_5").ToString();
+        }
+    }
+
+
 }
