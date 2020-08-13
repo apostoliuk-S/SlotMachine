@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class OptionsScript : MonoBehaviour
 {
@@ -37,9 +38,15 @@ public class OptionsScript : MonoBehaviour
     public void OpenLeaderBoard()
     {
         LeaderBoard.SetActive(true);
-    }   // Метод вызова окна лидерборда
+    }    // Метод вызова окна лидерборда
     public void CloseLeaderBoard()
     {
         LeaderBoard.SetActive(false);
-    } //  Метод закрытия окна лидербора
+    } //   Метод закрытия окна лидербора
+
+
+    public void BackToStart()
+    {
+        SceneManager.LoadScene(0);
+    }  // Возврат на начальную страницу
 }

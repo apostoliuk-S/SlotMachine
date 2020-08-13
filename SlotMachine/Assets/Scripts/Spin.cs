@@ -37,20 +37,26 @@ public class Spin : MonoBehaviour
     [SerializeField] private Vector3 stopPos_2;  // Рандомная позиция остановки барабанов (получает случайное значение из мпссива)...
     [SerializeField] private Vector3 stopPos_3; //
 
+    private Vector3 top_1_Pos;
+    private Vector3 top_2_Pos;
+    private Vector3 top_3_Pos;
+    private Vector3 top_4_Pos;
+    private Vector3 top_5_Pos;
+
     [SerializeField] int x;   //
     [SerializeField] int y;  // Тут 3 переменных для перевода рандомных значений с 3-х барабанов в их ценность: "1, 2, 3, 4, 5"...
     [SerializeField] int z; //
 
     public ParticleSystem ps; // Партикл полета поинтов...
-    [SerializeField] private bool workMainMethod; // Активация барабанов булевым значением...
-    [SerializeField] private bool activationProgResult;
+    [SerializeField] private bool workMainMethod;        // Активация барабанов булевым значением...
+    [SerializeField] private bool activationProgResult; //  Переменная активации программируемого результата...
+
+    // Активация методов присваивания Монет и Никнеймов в Лидерборд
     [SerializeField] private bool P1;
     [SerializeField] private bool P2;
     [SerializeField] private bool P3;
     [SerializeField] private bool P4;
     [SerializeField] private bool P5;
-
-    [SerializeField] private bool activationNEW_1;
 
 
     public Text betValue;   // Отображение ставки в панели с выбором ставки...
@@ -96,6 +102,10 @@ public class Spin : MonoBehaviour
     public Text ScorePlayer_5;
     /////////////////////////////////
 
+    int Score_1, Score_2, Score_3, Score_4, Score_5;
+    int Top_1, Top_2, Top_3, Top_4, Top_5;
+
+    bool ActivationSortScore;
 
     void Start()
     {
@@ -110,6 +120,13 @@ public class Spin : MonoBehaviour
         startPos_1 = new Vector3(-4.6f, -8.2f, 0);
         startPos_2 = new Vector3(0, -8.2f, 0);
         startPos_3 = new Vector3(4.6f, -8.2f, 0);
+
+        // Задаем позицию согласно рейтинга //
+        top_1_Pos = new Vector3(0,  1.1f, 0);
+        top_2_Pos = new Vector3(0,    0f, 0);
+        top_3_Pos = new Vector3(0, -1.1f, 0);
+        top_4_Pos = new Vector3(0, -2.2f, 0);
+        top_5_Pos = new Vector3(0, -3.3f, 0);
 
         Check_Players(); // Вызов метода проверки аккаунтов
     }
@@ -127,9 +144,11 @@ public class Spin : MonoBehaviour
         StartAllSpin();   // Запуск всех барабанов в едином методе...
         ACT();           //  Вызов метода зависимомтей кнопок...
         CheckCredit();  //   Метод проверки кредита...
+        CheckCredit_LB();
 
+        ActivationAfterPlayer_5();
 
-        Update_All_Data(); // Обновление всех данных по игрокам
+        Update_All_Data();  //     Обновление всех данных по игрокам...
     }
 
 
@@ -292,7 +311,6 @@ public class Spin : MonoBehaviour
 
         coinsInt -= bet; // Отнимаем стаку из общего счета
         CheckWinning(); // Проверка выиграша
-        
     }
 
     void ACT() // Метод зависимостей кнопок
@@ -439,6 +457,50 @@ public class Spin : MonoBehaviour
         {
             CreditPanel.SetActive(false);
             coinsText.color = Color.yellow;
+        }
+    }
+    void CheckCredit_LB()
+    {
+        if(Score_1 < 0)
+        {
+            ScorePlayer_1.color = Color.red;
+        }
+        if (Score_2 < 0)
+        {
+            ScorePlayer_2.color = Color.red;
+        }
+        if (Score_3 < 0)
+        {
+            ScorePlayer_3.color = Color.red;
+        }
+        if (Score_4 < 0)
+        {
+            ScorePlayer_4.color = Color.red;
+        }
+        if (Score_5 < 0)
+        {
+            ScorePlayer_5.color = Color.red;
+        }
+        ////////////////////////////////////
+        if (Score_1 > 0)
+        {
+            ScorePlayer_1.color = Color.yellow;
+        }
+        if (Score_2 > 0)
+        {
+            ScorePlayer_2.color = Color.yellow;
+        }
+        if (Score_3 > 0)
+        {
+            ScorePlayer_3.color = Color.yellow;
+        }
+        if (Score_4 > 0)
+        {
+            ScorePlayer_4.color = Color.yellow;
+        }
+        if (Score_5 > 0)
+        {
+            ScorePlayer_5.color = Color.yellow;
         }
     }
     void CheckWinning()  // Метод проверки выиграша
@@ -721,6 +783,7 @@ public class Spin : MonoBehaviour
         ScorePlayer_5.text = PlayerPrefs.GetInt("ScorePlayer_5").ToString();
         P5 = true;
         PlayerPrefs.SetString("Slot_5", "Z");
+        PlayerPrefs.SetInt("ActivationSort", 1);
     }
 
 
@@ -803,4 +866,182 @@ public class Spin : MonoBehaviour
     }
 
 
+    void ConvertToInt()
+    {
+        Score_1 = int.Parse(ScorePlayer_1.text);
+        Score_2 = int.Parse(ScorePlayer_2.text);
+        Score_3 = int.Parse(ScorePlayer_3.text);
+        Score_4 = int.Parse(ScorePlayer_4.text);
+        Score_5 = int.Parse(ScorePlayer_5.text);
+    } // Присваем переменным имеющиеся значения в Лидерборде
+    void BubbleSort()
+    {
+        int[] arrayScore = { Score_1, Score_2, Score_3, Score_4, Score_5 };
+
+        int temp;
+        for (int i = 0; i < arrayScore.Length - 1; i++)
+        {
+            for (int j = i + 1; j < arrayScore.Length; j++)
+            {
+                if (arrayScore[i] > arrayScore[j])
+                {
+                    temp = arrayScore[i];
+                    arrayScore[i] = arrayScore[j];
+                    arrayScore[j] = temp;
+                }
+            }
+        }
+
+        // Присваиваем нашим ТОПАМ значение по рейтингу //
+
+        for (int i = 0; i < arrayScore.Length; i++)
+        {
+            Top_5 = arrayScore[0];
+            Top_4 = arrayScore[1];
+            Top_3 = arrayScore[2];
+            Top_2 = arrayScore[3];
+            Top_1 = arrayScore[4];
+        }
+    } // Записываем полученные данные из Лидерборда в массив: *arrayScore* // Сортируем его // Присваиваем данные в переменные ТОП
+
+     // Методы проверок кол-ва монет у игроков и установка позиции согласно рейтингу //
+    //  Все эти методы запускаются в одном: * Leaderboard_Rating() * //
+    void FindTop_1()
+    {
+        if(Top_1 == Score_1)
+        {
+            PlayerField_1.position = top_1_Pos;
+        }
+        else if (Top_1 == Score_2)
+        {
+            PlayerField_2.position = top_1_Pos;
+        }
+        else if (Top_1 == Score_3)
+        {
+            PlayerField_3.position = top_1_Pos;
+        }
+        else if (Top_1 == Score_4)
+        {
+            PlayerField_4.position = top_1_Pos;
+        }
+        else if (Top_1 == Score_5)
+        {
+            PlayerField_5.position = top_1_Pos;
+        }
+    }
+    void FindTop_2()
+    {
+        if (Top_2 == Score_1)
+        {
+            PlayerField_1.position = top_2_Pos;
+        }
+        else if (Top_2 == Score_2)
+        {
+            PlayerField_2.position = top_2_Pos;
+        }
+        else if (Top_2 == Score_3)
+        {
+            PlayerField_3.position = top_2_Pos;
+        }
+        else if (Top_2 == Score_4)
+        {
+            PlayerField_4.position = top_2_Pos;
+        }
+        else if (Top_2 == Score_5)
+        {
+            PlayerField_5.position = top_2_Pos;
+        }
+    }
+    void FindTop_3()
+    {
+        if (Top_3 == Score_1)
+        {
+            PlayerField_1.position = top_3_Pos;
+        }
+        else if (Top_3 == Score_2)
+        {
+            PlayerField_2.position = top_3_Pos;
+        }
+        else if (Top_3 == Score_3)
+        {
+            PlayerField_3.position = top_3_Pos;
+        }
+        else if (Top_3 == Score_4)
+        {
+            PlayerField_4.position = top_3_Pos;
+        }
+        else if (Top_3 == Score_5)
+        {
+            PlayerField_5.position = top_3_Pos;
+        }
+    }
+    void FindTop_4()
+    {
+        if (Top_4 == Score_1)
+        {
+            PlayerField_1.position = top_4_Pos;
+        }
+        else if (Top_4 == Score_2)
+        {
+            PlayerField_2.position = top_4_Pos;
+        }
+        else if (Top_4 == Score_3)
+        {
+            PlayerField_3.position = top_4_Pos;
+        }
+        else if (Top_4 == Score_4)
+        {
+            PlayerField_4.position = top_4_Pos;
+        }
+        else if (Top_4 == Score_5)
+        {
+            PlayerField_5.position = top_4_Pos;
+        }
+    }
+    void FindTop_5()
+    {
+        if (Top_5 == Score_1)
+        {
+            PlayerField_1.position = top_5_Pos;
+        }
+        else if (Top_5 == Score_2)
+        {
+            PlayerField_2.position = top_5_Pos;
+        }
+        else if (Top_5 == Score_3)
+        {
+            PlayerField_3.position = top_5_Pos;
+        }
+        else if (Top_5 == Score_4)
+        {
+            PlayerField_4.position = top_5_Pos;
+        }
+        else if (Top_5 == Score_5)
+        {
+            PlayerField_5.position = top_5_Pos;
+        }
+    }
+
+    void Leaderboard_Rating()
+    {
+        FindTop_1();
+        FindTop_2();
+        FindTop_3();
+        FindTop_4();
+        FindTop_5();
+    }
+
+    void ActivationSort()
+    {
+        ConvertToInt();         // Метод получения данных из Лидерборда...
+        BubbleSort();          //  Метод сортировки и записи в ТОПЫ...
+        Leaderboard_Rating(); //   Делаем постоянную проверку и обновляем рейтинг в Лидерборде...
+    }
+    void ActivationAfterPlayer_5()
+    {
+        if(PlayerPrefs.GetInt("ActivationSort") == 1)
+        {
+            ActivationSort();
+        }
+    }
 }
